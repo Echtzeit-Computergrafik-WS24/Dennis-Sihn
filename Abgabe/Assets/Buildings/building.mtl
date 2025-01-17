@@ -1,0 +1,14 @@
+# Blender 4.3.2 MTL File: 'rtcg.blend'
+# www.blender.org
+
+newmtl DefaultMaterial
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Architecture 3_DefaultMaterial_BaseColor.png
+map_Ns Architecture 3_DefaultMaterial_Roughness.png
+map_refl Architecture 3_DefaultMaterial_Metallic.png
+map_Ke Architecture 3_DefaultMaterial_Emissive.png
+map_Bump -bm 1.000000 Architecture 3_DefaultMaterial_Normal.png

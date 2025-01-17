@@ -1,0 +1,14 @@
+# Blender 4.3.2 MTL File: 'rtcg.blend'
+# www.blender.org
+
+newmtl AlienHominid
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Alien_low_AlienHominid_BaseColor.png
+map_Ns Alien_low_AlienHominid_Roughness.png
+map_refl Alien_low_AlienHominid_Metallic.png
+map_Bump -bm 1.000000 Alien_low_AlienHominid_Normal.png
