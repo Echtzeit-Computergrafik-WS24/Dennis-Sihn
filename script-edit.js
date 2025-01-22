@@ -1,3 +1,5 @@
+
+
 // =====================================================================
 // Constants
 // =====================================================================
@@ -27,7 +29,7 @@ onMouseDrag((e) =>
 const orbitDistance = Sticky("orbitDistance", 10);
 onMouseWheel((e) =>
 {
-    orbitDistance.update((v) => glance.clamp(v * (1 + e.deltaY * 0.001), 1.5, 10.0));
+    orbitDistance.update((v) => glance.clamp(v * (1 + e.deltaY * 0.001), 1.5, 20.0));
 });
 
 /// Resizing the viewport will update the projection matrix.
@@ -208,7 +210,7 @@ const normalVSSource = `#version 300 es
     out vec4 f_posLightSpace;
     out vec3 f_normal;
     out vec2 f_texCoord;
-    out mat3 f_TBN; // Add TBN matrix for normal mapping
+    out mat3 f_TBN; // TangentBitangetNormal matrix for normal mapping
 
     void main() {
         vec4 worldPosition = u_modelMatrix * vec4(a_pos, 1.0);
@@ -291,6 +293,8 @@ const normalFSSource = `#version 300 es
         o_fragColor = vec4(ambient + shadow * (diffuse + specular), 1.0);
     }
 `;
+
+
 
 // Shader Program
 const geoProgram = glance.createProgram(gl, "geo-shader", geoVSSource, geoFSSource, {
@@ -659,7 +663,7 @@ setRenderLoop(({ globalTime }) =>
 
         // Render the house into the shadow map
         shadowHouse.uniform.u_lightMatrix = lightMatrix;
-        glance.draw(gl, shadowTruck);
+        glance.draw(gl, shadowHouse);
         framebufferStack.pop(gl);
     }
 
