@@ -24,17 +24,17 @@ onMouseDrag((e) =>
     orbitTilt.update((v) => glance.clamp(v - e.movementY * 0.008, -Math.PI / 2, Math.PI / 2));
 });
 /// ... and zoom in and out.
-const orbitDistance = Sticky("orbitDistance", 7);
+const orbitDistance = Sticky("orbitDistance", 10);
 onMouseWheel((e) =>
 {
     orbitDistance.update((v) => glance.clamp(v * (1 + e.deltaY * 0.001), 1.5, 10.0));
 });
 
 /// Resizing the viewport will update the projection matrix.
-const cameraProjection = Mat4.perspective(Math.PI / 4, gl.canvas.width / gl.canvas.height, 0.1, 14.);
+const cameraProjection = Mat4.perspective(Math.PI / 4, gl.canvas.width / gl.canvas.height, 0.1, 40.);
 onResize(() =>
 {
-    cameraProjection.perspective(Math.PI / 4, gl.canvas.width / gl.canvas.height, 0.1, 14.);
+    cameraProjection.perspective(Math.PI / 4, gl.canvas.width / gl.canvas.height, 0.1, 40.);
 });
 
 // =====================================================================
@@ -65,20 +65,15 @@ const AstronautHelmetGeo = await glance.loadObj("Abgabe/Assets/astrounaut/astron
 const AstronautDiffuse = await glance.loadTexture(gl, "Abgabe/Assets/astrounaut/suit_DIFF2.png", { wrap: gl.REPEAT });
 const AstronautNormal = await glance.loadTexture(gl, "Abgabe/Assets/astrounaut/suit_NORM2.png", { wrap: gl.REPEAT });
 
-//add helmet
-
-
 // -----------------Ice Cream Truck-----------------
-
 const IceCreamTruckGeo = await glance.loadObj("Abgabe/Assets/Car/icetruck.obj");
 const IceCreamTruckDiffuse = await glance.loadTexture(gl, "Abgabe/Assets/Car/car_ice.png", { wrap: gl.REPEAT });
-
-
 
 // -----------------House-----------------
 const HouseGeo = await glance.loadObj("Abgabe/Assets/Buildings/house.obj");
 const HouseDiffuse = await glance.loadTexture(gl, "Abgabe/Assets/Buildings/Architecture3_DefaultMaterial_BaseColor.png", { wrap: gl.REPEAT });
-
+const HouseNormal = await glance.loadTexture(gl, "Abgabe/Assets/Buildings/Architecture3_DefaultMaterial_Normal.png", { wrap: gl.REPEAT });
+const HouseMetallic = await glance.loadTexture(gl, "Abgabe/Assets/Buildings/Architecture 3_DefaultMaterial_Metallic.png", { wrap: gl.REPEAT });
 
 // =====================================================================
 // Shadow Buffer
@@ -243,6 +238,7 @@ const normalFSSource = `#version 300 es
     uniform sampler2D u_texDiffuse;
     uniform sampler2D u_texSpecular;
     uniform sampler2D u_texNormal;
+    uniform sampler2D u_Metallic;
     uniform mediump sampler2DShadow u_texShadow;
 
     in vec3 f_posWorldSpace;
@@ -267,7 +263,7 @@ const normalFSSource = `#version 300 es
         // texture
         vec3 texDiffuse = texture(u_texDiffuse, f_texCoord).rgb;
         vec3 texSpecular = texture(u_texSpecular, f_texCoord).rgb;
-        
+        float metallic = texture(u_Metallic, f_texCoord).r;
         // Normal mapping
         vec3 normalMap = texture(u_texNormal, f_texCoord).rgb * 2.0 - 1.0;
         vec3 normal = normalize(f_TBN * normalMap);
@@ -314,8 +310,6 @@ const normalProgram = glance.createProgram(gl, "normal-shader", normalVSSource, 
 // =====================================================================
 // Beauty Pass
 // =====================================================================
-
-
 
 
 // -----------------Landscape-----------------
@@ -412,19 +406,19 @@ const astronautVao = glance.createVertexArrayObject(gl, "astronaut-vao",
         a_pos: { data: AstronautGeo.positions, height: 3 },
         a_normal: { data: AstronautGeo.normals, height: 3 },
         a_texCoord: { data:AstronautGeo.texCoords, height: 2 },
+        a_tangent: { data: AstronautGeo.tangents, height: 3 },
     },
-    geoProgram,
+    normalProgram,
 );
 
 const astronaut = glance.createDrawCall(gl, "astronaut",
     astronautVao,
-    geoProgram,
+    normalProgram,
     {
         uniforms: {
             u_modelMatrix: Mat4.identity(),
             u_texDiffuse: AstronautDiffuse,
-            //u_texSpecular: landscapeSpecular,
-            //u_texNormal: landscapeNormal,
+            u_texNormal: AstronautNormal,
             u_texShadow: shadowDepthTexture,
         },
         cullFace: gl.BACK,
@@ -495,19 +489,20 @@ const houseVao = glance.createVertexArrayObject(gl, "house-vao",
         a_pos: { data: HouseGeo.positions, height: 3 },
         a_normal: { data: HouseGeo.normals, height: 3 },
         a_texCoord: { data:HouseGeo.texCoords, height: 2 },
+        a_tangent: { data: HouseGeo.tangents, height: 3 },
     },
-    geoProgram,
+    normalProgram,
 );
 
 const house = glance.createDrawCall(gl, "house",
     houseVao,
-    geoProgram,
+    normalProgram,
     {
         uniforms: {
             u_modelMatrix: Mat4.identity(),
             u_texDiffuse: HouseDiffuse,
             //u_texSpecular: landscapeSpecular,
-            //u_texNormal: landscapeNormal,
+            u_texNormal: HouseNormal,
             u_texShadow: shadowDepthTexture,
         },
         cullFace: gl.BACK,
@@ -515,29 +510,6 @@ const house = glance.createDrawCall(gl, "house",
     }
 );
 
-
-
-/* const ground = glance.createDrawCall(gl, "ground",
-    {
-        ibo: groundGeo.indices,
-        attributes: {
-            a_pos: { data: groundGeo.positions, height: 3 },
-            a_normal: { data: groundGeo.normals, height: 3 },
-            a_texCoord: { data: groundGeo.texCoords, height: 2 },
-        }
-    },
-    geoProgram,
-    {
-        uniforms: {
-            u_modelMatrix: Mat4.rotateX(Math.PI / -2),
-            u_texDiffuse: marbleDiffuse,
-            u_texSpecular: marbleSpecular,
-            u_texShadow: shadowDepthTexture,
-        },
-        cullFace: gl.BACK,
-        depthTest: gl.LESS,
-    }
-); */
 
 const skybox = await glance.createSkybox(gl,
     [ 
