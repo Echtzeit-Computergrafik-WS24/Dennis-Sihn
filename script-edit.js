@@ -62,7 +62,7 @@ const alienGunMetallic = await glance.loadTexture(gl, "Abgabe/Assets/alienb/Blas
 
 // -----------------Astronaut-----------------
 const AstronautGeo = await glance.loadObj("Abgabe/Assets/astrounaut/astronaut-body.obj");
-const AstronautHelmetGeo = await glance.loadObj("Abgabe/Assets/astrounaut/astronaut-helmet.obj");
+const AstronautHelmetGeo = await glance.loadObj("Abgabe/Assets/astrounaut/helmet.obj");
 
 const AstronautDiffuse = await glance.loadTexture(gl, "Abgabe/Assets/astrounaut/suit_DIFF2.png", { wrap: gl.REPEAT });
 const AstronautNormal = await glance.loadTexture(gl, "Abgabe/Assets/astrounaut/suit_NORM2.png", { wrap: gl.REPEAT });

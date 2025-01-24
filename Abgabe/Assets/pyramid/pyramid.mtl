@@ -1,0 +1,14 @@
+# Blender 4.3.2 MTL File: 'rtcg.blend'
+# www.blender.org
+
+newmtl Material.001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/PyramidGlowingModelV1_DefaultMaterial_BaseColor.png
+map_Ns C:/PyramidGlowingModelV1_DefaultMaterial_Roughness.png
+map_refl C:/PyramidGlowingModelV1_DefaultMaterial_Metallic.png
+map_Ke C:/PyramidGlowingModelV1_DefaultMaterial_Emissive.png
+map_Bump -bm 1.000000 C:/PyramidGlowingModelV1_DefaultMaterial_Normal.png
